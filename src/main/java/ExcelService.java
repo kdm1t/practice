@@ -51,12 +51,12 @@ public class ExcelService {
                 row.createCell(i);
                 row1.createCell(i);
                 row.createCell(i + 1);
-                row1.createCell(1 + 1);
-                row.createCell(1 + 2);
-                row1.createCell(1 + 2);
+                row1.createCell(i + 1);
+                row.createCell(i + 2);
+                row1.createCell(i + 2);
                 currentSheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), cR.getRow(), i, i + 2));
-                //скок за 15 дней ходил или не ходил заполнить надо сделаем пиздатую функцию все будет охуенно рабоатть дорого богато заработем миоллион от универа
-                i += 2;
+                row1.getCell(i).setCellValue(person.getFirstPartSumHours());
+                i += 3;
             }
             row.createCell(i).setCellValue(day.getValue().toString());
             row1.createCell(i);
@@ -64,19 +64,33 @@ public class ExcelService {
         }
         row.createCell(i);
         row1.createCell(i);
-        row.createCell(1 + 1);
-        row1.createCell(1 + 1);
-        row.createCell(1 + 2);
-        row1.createCell(1 + 2);
+        row.createCell(i + 1);
+        row1.createCell(i + 1);
+        row.createCell(i + 2);
+        row1.createCell(i + 2);
         currentSheet.addMergedRegion(new CellRangeAddress(cR.getRow(), cR.getRow(), i, i + 2));
 
-        //скок всего дней тут заполняем
+        //Часы
+        i = 7;
+        for (TextField hours : person.getHours()) {
+            if (i == 22) {
+                currentSheet.addMergedRegion(new CellRangeAddress(row1.getRowNum(), row1.getRowNum(), i, i + 2));
+                row.getCell(i).setCellValue(person.getFirstPartSumDays());
+                row1.getCell(i).setCellValue(person.getFirstPartSumHours());
+                i += 3;
+            }
+            row1.getCell(i).setCellValue(hours.getText());
+            i++;
+        }
+        currentSheet.addMergedRegion(new CellRangeAddress(row1.getRowNum(), row1.getRowNum(), i, i + 2));
+        row.getCell(i).setCellValue(person.getSumDays());
+        row1.getCell(i).setCellValue(person.getSumHours());
+
         try(FileOutputStream file = new FileOutputStream("result.xls")) {
             workbook.write(file);
         } catch (Exception e) {
             throw new IOException(e);
         }
-//        workbook.write(new FileOutputStream("tabel.xls"));
         workbook.close();
     }
 }

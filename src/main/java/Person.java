@@ -1,6 +1,8 @@
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 public class Person {
@@ -12,7 +14,7 @@ public class Person {
     private List<ChoiceBox> days;
     private List<TextField> hours;
 
-
+    private static List<String> list = Arrays.asList("Л", "Г", "С", "К", "ЗН", "ЗП", "ЗС", "РП", "Ф", "Я");
 
     public String getFio() {
         return surname +  " " + name + " " + middleName;
@@ -72,5 +74,41 @@ public class Person {
 
     public void setHours(List<TextField> hours) {
         this.hours = hours;
+    }
+
+    public Double getSumHours() {
+        Double count = 0.0;
+        for (TextField hour : hours) {
+            count += Double.parseDouble(hour.getText());
+        }
+        return count;
+    }
+
+    public Double getFirstPartSumHours() {
+        Double count = 0.0;
+        for (int i = 0; i < 15; i++) {
+            count += Double.parseDouble(hours.get(i).getText());
+        }
+        return count;
+    }
+
+    public Integer getSumDays() {
+        Integer count = 0;
+        for (ChoiceBox day : days) {
+            if (list.contains(day.getValue().toString())) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public Integer getFirstPartSumDays() {
+        Integer count = 0;
+        for (int i = 0; i < 15; i++) {
+            if (list.contains(days.get(i).getValue().toString())) {
+                count++;
+            }
+        }
+        return count;
     }
 }
