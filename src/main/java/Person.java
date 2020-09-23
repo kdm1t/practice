@@ -111,4 +111,17 @@ public class Person {
         }
         return count;
     }
+
+    @Override
+    public String toString() {
+        return "Person{" +
+                "name='" + name + '\'' +
+                ", middleName='" + middleName + '\'' +
+                ", surname='" + surname + '\'' +
+                ", profession='" + profession + '\'' +
+                ", number='" + number + '\'' +
+                ", days=" + days +
+                ", hours=" + hours +
+                '}';
+    }
 }

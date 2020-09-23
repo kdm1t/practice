@@ -6,7 +6,12 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 
+import java.awt.*;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 public class ExcelService {
     private Workbook workbook;
@@ -42,10 +47,38 @@ public class ExcelService {
     private CellReference getCellReference() {
         CellReference cR = new CellReference("A15");
         for (i = 15; currentSheet.getRow(cR.getRow()).getCell(cR.getCol()) != null; i += 2) {
+            addPersonToList(cR);
             cR = new CellReference("A" + i);
             count++;
         }
         return cR;
+    }
+
+    private void addPersonToList(CellReference cR) {
+        String fio = currentSheet.getRow(cR.getRow()).getCell(2).getStringCellValue();
+        List<String> list = new ArrayList<>(Arrays.asList(fio.split(" ")));
+        List<ChoiceBox> days = new ArrayList<>();
+        List<TextField> hours = new ArrayList<>();
+        Person person = new Person();
+        person.setSurname(list.get(0));
+        person.setName(list.get(1));
+        person.setMiddleName(list.get(2));
+        person.setNumber(currentSheet.getRow(cR.getRow()).getCell(3).getStringCellValue());
+        person.setProfession(currentSheet.getRow(cR.getRow()).getCell(5).getStringCellValue());
+        for (int k = 7; k < 22; k++) {
+            ChoiceBox day = new ChoiceBox();
+            day.setValue(currentSheet.getRow(cR.getRow()).getCell(k).getStringCellValue());
+            days.add(day);
+        }
+        person.setDays(days);
+        for (int k = 26; k < 42; k++) {
+            TextField hour = new TextField();
+//            hour.setText(currentSheet.getRow(cR.getRАow()).getCell(k).getStringCellValue());
+            hour.setText(String.valueOf(currentSheet.getRow(cR.getRow()).getCell(k)));
+            hours.add(hour);
+        }
+        person.setHours(hours);
+        System.out.println(person);
     }
 
     private void setCellFromPerson(Person person, Row firstRow, Row secondRow) {
