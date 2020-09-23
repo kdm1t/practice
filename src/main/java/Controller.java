@@ -23,6 +23,12 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        //Начальные значения для удобства в тестах
+        name.setText("Алан");
+        surname.setText("Только дай знать где ты находишься");
+        middleName.setText("Меня звать");
+        profession.setText("Чеченец");
+        number.setText("05");
         getDays().forEach(choiceBox -> {
             choiceBox.setValue("В");
             choiceBox.getItems().add("В");

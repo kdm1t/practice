@@ -4,28 +4,72 @@ import org.apache.commons.codec.binary.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellReference;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 
 import java.io.*;
 
 public class ExcelService {
     private Workbook workbook;
     private Sheet currentSheet;
+    private static int count = 0;
+    private static int i = 0;
 
     public ExcelService() throws IOException {
-        workbook = WorkbookFactory.create(new FileInputStream((getClass().getClassLoader().getResource("tabel.xls").getFile())));
+//        workbook = WorkbookFactory.create(new FileInputStream((getClass().getClassLoader().getResource("tabel.xls").getFile())));
+        workbook = WorkbookFactory.create(new FileInputStream("C:\\tabel.xls"));
         currentSheet = workbook.getSheetAt(0);
     }
 
     public void addPersons(Person person) throws IOException {
+        CellReference cR = getCellReference();
+
+        Row firstRow =  currentSheet.createRow(cR.getRow());
+        Row secondRow = currentSheet.createRow(cR.getRow() + 1);
+
+        setCellFromPerson(person, firstRow, secondRow);
+
+        setDaysToCells(person, firstRow);
+
+        setHoursToCells(person, secondRow);
+
+        setCellsWithFullDaysAndHours(person, firstRow, secondRow);
+
+        saveBookAndClose();
+    }
+
+    private void setDaysToCells(Person person, Row row) {
+        i = 7;
+        for (ChoiceBox day : person.getDays()) {
+            if (i == 22) {
+                setCellWithFirstPartOfDays(person, row);
+            }
+            row.createCell(i).setCellValue(day.getValue().toString());
+            i++;
+        }
+    }
+
+    private void setHoursToCells(Person person, Row row) {
+        i = 7;
+        for (TextField hours : person.getHours()) {
+            if (i == 22) {
+                setCellWithFirstPartOfHours(person, row);
+            }
+            row.createCell(i).setCellValue(hours.getText());
+            i++;
+        }
+    }
+
+    private CellReference getCellReference() {
         CellReference cR = new CellReference("A15");
-        int i = 15;
-        int count = 0;
         for (i = 15; currentSheet.getRow(cR.getRow()).getCell(cR.getCol()) != null; i += 2) {
             cR = new CellReference("A" + i);
             count++;
         }
-        Row row =  currentSheet.createRow(cR.getRow());
-        Row row1 = currentSheet.createRow(cR.getRow() + 1);
+        return cR;
+    }
+
+    private void setCellFromPerson(Person person, Row row, Row row1) {
+
         row.createCell(0).setCellValue(count);
         row1.createCell(0);
         currentSheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row1.getRowNum(), 0, 0));
@@ -45,50 +89,42 @@ public class ExcelService {
         row.createCell(6);
         row1.createCell(6);
         currentSheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row1.getRowNum(), 5, 6));
-        i = 7;
-        for (ChoiceBox day : person.getDays()) {
-            if (i == 22) {
-                row.createCell(i);
-                row1.createCell(i);
-                row.createCell(i + 1);
-                row1.createCell(i + 1);
-                row.createCell(i + 2);
-                row1.createCell(i + 2);
-                currentSheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), cR.getRow(), i, i + 2));
-                row1.getCell(i).setCellValue(person.getFirstPartSumHours());
-                i += 3;
-            }
-            row.createCell(i).setCellValue(day.getValue().toString());
-            row1.createCell(i);
-            i++;
-        }
-        row.createCell(i);
-        row1.createCell(i);
-        row.createCell(i + 1);
-        row1.createCell(i + 1);
-        row.createCell(i + 2);
-        row1.createCell(i + 2);
-        currentSheet.addMergedRegion(new CellRangeAddress(cR.getRow(), cR.getRow(), i, i + 2));
+    }
 
-        //Часы
-        i = 7;
-        for (TextField hours : person.getHours()) {
-            if (i == 22) {
-                currentSheet.addMergedRegion(new CellRangeAddress(row1.getRowNum(), row1.getRowNum(), i, i + 2));
-                row.getCell(i).setCellValue(person.getFirstPartSumDays());
-                row1.getCell(i).setCellValue(person.getFirstPartSumHours());
-                i += 3;
-            }
-            row1.getCell(i).setCellValue(hours.getText());
-            i++;
+    private void setCellWithFirstPartOfDays(Person person, Row row) {
+        for (int k = 0; k < 2; k++) {
+            row.createCell(i + k);
         }
-        currentSheet.addMergedRegion(new CellRangeAddress(row1.getRowNum(), row1.getRowNum(), i, i + 2));
-        row.getCell(i).setCellValue(person.getSumDays());
-        row1.getCell(i).setCellValue(person.getSumHours());
+        currentSheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), i, i + 2));
+        row.getCell(i).setCellValue(person.getFirstPartSumDays());
+        i += 3;
+    }
 
-        try(FileOutputStream file = new FileOutputStream("result.xls")) {
+    private void setCellWithFirstPartOfHours(Person person, Row row) {
+        for (int k = 0; k < 2; k++) {
+            row.createCell(i + k);
+        }
+        currentSheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), i, i + 2));
+        row.getCell(i).setCellValue(person.getFirstPartSumHours());
+        i += 3;
+    }
+
+    private void setCellsWithFullDaysAndHours(Person person, Row firstRow, Row secondRow) {
+        for (int k = 0; k < 2; k++) {
+            firstRow.createCell(i + k);
+            secondRow.createCell(i + k);
+        }
+        currentSheet.addMergedRegion(new CellRangeAddress(firstRow.getRowNum(), firstRow.getRowNum(), i, i + 2));
+        currentSheet.addMergedRegion(new CellRangeAddress(secondRow.getRowNum(), secondRow.getRowNum(), i, i + 2));
+        firstRow.getCell(i).setCellValue(person.getSumDays());
+        secondRow.getCell(i).setCellValue(person.getSumHours());
+    }
+
+    private void saveBookAndClose() throws IOException {
+        try (FileOutputStream file = new FileOutputStream("result.xls")) {
             workbook.write(file);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new IOException(e);
         }
         workbook.close();
