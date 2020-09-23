@@ -1,6 +1,7 @@
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -13,6 +14,8 @@ public class Person {
     private String number;
     private List<ChoiceBox> days;
     private List<TextField> hours;
+    private List<String> daysToString;
+    private List<String> hoursToString;
 
     private static List<String> list = Arrays.asList("Л", "Г", "С", "К", "ЗН", "ЗП", "ЗС", "РП", "Ф", "Я");
 
@@ -76,6 +79,26 @@ public class Person {
         this.hours = hours;
     }
 
+    public List<String> getDaysToString() {
+        List<String> daysToString = new ArrayList<>();
+        days.forEach(choiceBox -> daysToString.add(choiceBox.getValue().toString()));
+        return daysToString;
+    }
+
+    public void setDaysToString(List<String> daysToString) {
+        this.daysToString = daysToString;
+    }
+
+    public List<String> getHoursToString() {
+        List<String> hoursToString = new ArrayList<>();
+        hours.forEach(textField -> hoursToString.add(textField.getText()));
+        return hoursToString;
+    }
+
+    public void setHoursToString(List<String> hoursToString) {
+        this.hoursToString = hoursToString;
+    }
+
     public Double getSumHours() {
         Double count = 0.0;
         for (TextField hour : hours) {
@@ -120,8 +143,8 @@ public class Person {
                 ", surname='" + surname + '\'' +
                 ", profession='" + profession + '\'' +
                 ", number='" + number + '\'' +
-                ", days=" + days +
-                ", hours=" + hours +
+                ", days=" + daysToString +
+                ", hours=" + hoursToString +
                 '}';
     }
 }

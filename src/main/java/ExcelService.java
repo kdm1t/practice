@@ -21,8 +21,8 @@ public class ExcelService {
     private CellStyle fullBorderStyle;
 
     public ExcelService() throws IOException {
-//        workbook = WorkbookFactory.create(new FileInputStream((getClass().getClassLoader().getResource("tabel.xls").getFile())));
-        workbook = WorkbookFactory.create(new FileInputStream("C:\\tabel.xls"));
+        workbook = WorkbookFactory.create(new FileInputStream((getClass().getClassLoader().getResource("tabel.xls").getFile())));
+//        workbook = WorkbookFactory.create(new FileInputStream("C:\\tabel.xls"));
         currentSheet = workbook.getSheetAt(0);
         makeFullBorderStyle();
     }
@@ -57,8 +57,10 @@ public class ExcelService {
     private void addPersonToList(CellReference cR) {
         String fio = currentSheet.getRow(cR.getRow()).getCell(2).getStringCellValue();
         List<String> list = new ArrayList<>(Arrays.asList(fio.split(" ")));
-        List<ChoiceBox> days = new ArrayList<>();
-        List<TextField> hours = new ArrayList<>();
+//        List<ChoiceBox> days = new ArrayList<>();
+//        List<TextField> hours = new ArrayList<>();
+        List<String> days = new ArrayList<>();
+        List<String> hours = new ArrayList<>();
         Person person = new Person();
         person.setSurname(list.get(0));
         person.setName(list.get(1));
@@ -66,18 +68,22 @@ public class ExcelService {
         person.setNumber(currentSheet.getRow(cR.getRow()).getCell(3).getStringCellValue());
         person.setProfession(currentSheet.getRow(cR.getRow()).getCell(5).getStringCellValue());
         for (int k = 7; k < 22; k++) {
-            ChoiceBox day = new ChoiceBox();
-            day.setValue(currentSheet.getRow(cR.getRow()).getCell(k).getStringCellValue());
-            days.add(day);
+//            ChoiceBox day = new ChoiceBox();
+//            day.setValue(currentSheet.getRow(cR.getRow()).getCell(k).getStringCellValue());
+//            days.add(day);
+            days.add(currentSheet.getRow(cR.getRow()).getCell(k).getStringCellValue());
         }
-        person.setDays(days);
+//        person.setDays(days);
+        person.setDaysToString(days);
         for (int k = 26; k < 42; k++) {
-            TextField hour = new TextField();
+//            TextField hour = new TextField();
 //            hour.setText(currentSheet.getRow(cR.getRАow()).getCell(k).getStringCellValue());
-            hour.setText(String.valueOf(currentSheet.getRow(cR.getRow()).getCell(k)));
-            hours.add(hour);
+//            hour.setText(String.valueOf(currentSheet.getRow(cR.getRow()).getCell(k)));
+//            hours.add(hour);
+            hours.add(currentSheet.getRow(cR.getRow() + 1).getCell(k).toString());
         }
-        person.setHours(hours);
+//        person.setHours(hours);
+        person.setHoursToString(hours);
         System.out.println(person);
     }
 
