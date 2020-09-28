@@ -4,9 +4,15 @@ import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.io.File;
+
 public class Main extends Application {
+
+    public static File file;
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -20,6 +26,11 @@ public class Main extends Application {
         stage.setScene(scene);
 
         stage.setTitle("Hello JavaFX");
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Choose excel file");
+        file = fileChooser.showOpenDialog(stage);
+        System.out.println(file.getAbsolutePath());
 
         stage.show();
     }
