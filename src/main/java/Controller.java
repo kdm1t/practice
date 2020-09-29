@@ -49,11 +49,11 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         //Начальные значения для удобства в тестах
-        name.setText("Алан");
-        surname.setText("Только дай знать где ты находишься");
-        middleName.setText("Меня звать");
-        profession.setText("Чеченец");
-        number.setText("05");
+        name.setText("Vladimir");
+        surname.setText("Putin");
+        middleName.setText("Vladimirovich");
+        profession.setText("President");
+        number.setText("007");
         getDays().forEach(choiceBox -> {
             choiceBox.setValue("В");
             choiceBox.getItems().add("В");
@@ -110,6 +110,7 @@ public class Controller implements Initializable {
                         super.updateItem(item, empty);
                         if (item != null) {
                             setTooltip(new Tooltip("afkbwfjnlak"));
+                            //tooltip.setShowDelay(Duration.seconds(3)) в java >= 9
                             List<String> days = item.getDaysToString();
                             List<String> hours = item.getHoursToString();
 
