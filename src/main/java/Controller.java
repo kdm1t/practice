@@ -1,25 +1,50 @@
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.util.Callback;
+import org.apache.poi.ss.util.CellReference;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.List;
+import java.util.ResourceBundle;
 
 
 public class Controller implements Initializable {
-    @FXML TextField name;
-    @FXML TextField surname;
-    @FXML TextField middleName;
-    @FXML TextField profession;
-    @FXML TextField number;
+    @FXML
+    TextField name;
+    @FXML
+    TextField surname;
+    @FXML
+    TextField middleName;
+    @FXML
+    TextField profession;
+    @FXML
+    TextField number;
+    @FXML
+    Button acceptBtn;
+    @FXML
+    List<ChoiceBox> days;
+    @FXML
+    List<TextField> hours;
+    @FXML
+    private List<TableColumn<String, Person>> columns;
+    @FXML
+    private DatePicker date;
+    @FXML
+    private TableView<Person> persons;
+    private ExcelService excelService;
 
-    @FXML Button acceptBtn;
 
-    @FXML List<ChoiceBox> days;
-    @FXML List<TextField> hours;
+    public Controller() {
+        try {
+            excelService = new ExcelService();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -53,6 +78,88 @@ public class Controller implements Initializable {
         getHours().forEach(textField -> {
             textField.setText("2");
         });
+
+        columns.get(0).setCellValueFactory(new PropertyValueFactory<String, Person>("surname"));
+        columns.get(1).setCellValueFactory(new PropertyValueFactory<String, Person>("name"));
+        columns.get(2).setCellValueFactory(new PropertyValueFactory<String, Person>("middleName"));
+        columns.get(3).setCellValueFactory(new PropertyValueFactory<String, Person>("number"));
+        columns.get(4).setCellValueFactory(new PropertyValueFactory<String, Person>("profession"));
+//        columns.get(5).setCellFactory(new Callback<TableColumn<String, Person>, TableCell<String, Person>>() {
+//            @Override
+//            public TableCell<String, Person> call(TableColumn<String, Person> param) {
+//                return new TableCell<String, Person>(){
+//                    @Override
+//                    protected void updateItem(Person item, boolean empty) {
+//                        super.updateItem(item, empty);
+//                        setText("data");
+//                        getTableView().
+////                        if (item != null) {
+////                            System.out.println(getTableView().getItems().get(getTableRow().getIndex()).toString());
+////                            setTooltip(new Tooltip(item.getFio()));
+////                        }
+//                    }
+//                };
+//            }
+//        });
+        persons.setRowFactory(new Callback<TableView<Person>, TableRow<Person>>() {
+            @Override
+            public TableRow<Person> call(TableView<Person> param) {
+                return new TableRow<Person>(){
+                    @Override
+                    protected void updateItem(Person item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item != null) {
+                            setTooltip(new Tooltip("afkbwfjnlak"));
+                            List<String> days = item.getDaysToString();
+                            List<String> hours = item.getHoursToString();
+
+                            StringBuilder result = new StringBuilder("");
+                            for (String day : days) { result.append(" | ").append(day); }
+                            result.append("\n");
+                            for (String hour : hours) { result.append(" | ").append(hour); }
+                            setTooltip(new Tooltip(result.toString()));
+                        }
+                    }
+                };
+            }
+        });
+//        columns.get(5).setCellValueFactory(new PropertyValueFactory<String, Person>("daysToString") {
+//            @Override
+//            public ObservableValue<Person> call(TableColumn.CellDataFeatures<String, Person> param) {
+//                return super.call(param);
+//            }
+//        });
+//        columns.get(5).setCellFactory(columns -> new TableCell<String, Person>() {
+//            @Override
+//            protected void updateItem(Person item, boolean empty) {
+//                super.updateItem(item, empty);
+//                setText("Дата и часы");
+//
+//                StringBuilder result = new StringBuilder("");
+//                if (item != null) {
+//                    List<String> days = item.getDaysToString();
+//                    List<String> hours = item.getHoursToString();
+//                    System.out.println("lawd");
+////
+//                    result = new StringBuilder();
+//                    for (String day : days) {
+//                        result.append(" | ").append(day);
+//                    }
+//                    result.append("\n");
+//                    for (String hour : hours) {
+//                        result.append(" | ").append(hour);
+//                    }
+//                    setTooltip(new Tooltip(result.toString()));
+//                }
+//                setTooltip(new Tooltip(result.toString()));
+//            }
+//        });
+
+        for (Person prn : excelService.getPersons()) {
+            persons.getItems().add(prn);
+        }
+
+//        excelService.getPersons().forEach(person -> persons.getItems().add(person));
     }
 
     @FXML

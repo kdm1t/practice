@@ -1,16 +1,14 @@
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
-import org.apache.commons.codec.binary.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellReference;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 
-import java.awt.*;
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 public class ExcelService {
@@ -21,9 +19,8 @@ public class ExcelService {
     private CellStyle fullBorderStyle;
 
     public ExcelService() throws IOException {
-//        workbook = WorkbookFactory.create(new FileInputStream((getClass().getClassLoader().getResource("tabel.xls").getFile())));
+        workbook = WorkbookFactory.create(new FileInputStream((getClass().getClassLoader().getResource("tabel.xls").getFile())));
 //        workbook = WorkbookFactory.create(new FileInputStream("C:\\tabel.xls"));
-        workbook = WorkbookFactory.create(new FileInputStream(Main.file.getAbsolutePath()));
         currentSheet = workbook.getSheetAt(0);
         makeFullBorderStyle();
     }
@@ -48,16 +45,31 @@ public class ExcelService {
     private CellReference getCellReference() {
         CellReference cR = new CellReference("A15");
         for (i = 15; currentSheet.getRow(cR.getRow()).getCell(cR.getCol()) != null; i += 2) {
-            cR = new CellReference("A" + i);
             addPersonToList(cR);
+            cR = new CellReference("A" + i);
             count++;
         }
         return cR;
     }
 
-    private void addPersonToList(CellReference cR) {
+    public List<Person> getPersons() {
+        List<Person> persons = new ArrayList<>();
+
+        CellReference cR = new CellReference("A15");
+        for (int i = 17; currentSheet.getRow(cR.getRow()).getCell(cR.getCol()) != null; i += 2) {
+            double test = currentSheet.getRow(cR.getRow()).getCell(cR.getCol()).getNumericCellValue();
+
+            Person p = addPersonToList(cR);
+            persons.add(p);
+            cR = new CellReference("A" + i);
+        }
+        return persons;
+    }
+
+    public Person addPersonToList(CellReference cR) {
         String fio = currentSheet.getRow(cR.getRow()).getCell(2).getStringCellValue();
         List<String> list = Arrays.asList(fio.split(" "));
+
         List<String> days = new ArrayList<>();
         List<String> hours = new ArrayList<>();
         Person person = new Person();
@@ -66,22 +78,24 @@ public class ExcelService {
         person.setMiddleName(list.get(2));
         person.setNumber(currentSheet.getRow(cR.getRow()).getCell(3).getStringCellValue());
         person.setProfession(currentSheet.getRow(cR.getRow()).getCell(5).getStringCellValue());
-        for (int k = 7; k < 22; k++) {
-            days.add(currentSheet.getRow(cR.getRow()).getCell(k).getStringCellValue());
+        for (int k = 7; k < 38; k++) {
+            if (k != 22) {
+                days.add(currentSheet.getRow(cR.getRow()).getCell(k).getStringCellValue());
+                hours.add(currentSheet.getRow(cR.getRow() + 1).getCell(k).toString());
+            } else {
+                k += 2;
+            }
         }
         person.setDaysToString(days);
-        for (int k = 26; k < 42; k++) {
-            hours.add(currentSheet.getRow(cR.getRow() + 1).getCell(k).toString());
-        }
         person.setHoursToString(hours);
-        System.out.println(person);
+        return person;
     }
 
     private void setCellFromPerson(Person person, Row firstRow, Row secondRow) {
         CellStyle fioStyle = workbook.createCellStyle();
         fioStyle.setBorderBottom(BorderStyle.THIN);
         fioStyle.setBorderTop(BorderStyle.THIN);
-        fioStyle.setAlignment(HorizontalAlignment.RIGHT); //не работает тут
+        fioStyle.setAlignment(HorizontalAlignment.RIGHT);
 
         firstRow.createCell(0).setCellStyle(fioStyle);
         secondRow.createCell(0).setCellStyle(fioStyle);
@@ -94,7 +108,7 @@ public class ExcelService {
         currentSheet.addMergedRegion(new CellRangeAddress(firstRow.getRowNum(), secondRow.getRowNum(), 1, 1));
 
         fioStyle.setWrapText(true);
-        fioStyle.setAlignment(HorizontalAlignment.LEFT); //не работает тут (alignment)
+        fioStyle.setAlignment(HorizontalAlignment.LEFT);
         firstRow.createCell(2).setCellStyle(fioStyle);
         secondRow.createCell(2).setCellStyle(fioStyle);
         firstRow.getCell(2).setCellValue(person.getFio());

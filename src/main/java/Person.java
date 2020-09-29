@@ -3,7 +3,6 @@ import javafx.scene.control.TextField;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 public class Person {
@@ -80,8 +79,8 @@ public class Person {
     }
 
     public List<String> getDaysToString() {
-        List<String> daysToString = new ArrayList<>();
-        days.forEach(choiceBox -> daysToString.add(choiceBox.getValue().toString()));
+//        List<String> daysToString = new ArrayList<>();
+//        days.forEach(choiceBox -> daysToString.add(choiceBox.getValue().toString()));
         return daysToString;
     }
 
@@ -90,8 +89,8 @@ public class Person {
     }
 
     public List<String> getHoursToString() {
-        List<String> hoursToString = new ArrayList<>();
-        hours.forEach(textField -> hoursToString.add(textField.getText()));
+//        List<String> hoursToString = new ArrayList<>();
+//        hours.forEach(textField -> hoursToString.add(textField.getText()));
         return hoursToString;
     }
 
